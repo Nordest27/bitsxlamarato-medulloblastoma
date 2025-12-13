@@ -264,7 +264,6 @@ def validate(model, dataloader, beta, criterion, device,cvae=False,class_data=No
                 kl_loss += kl.item()
                 running_loss += loss.item()
         else:
-            print('Validating VAE')
             for data in dataloader:
                 data = data.to(device)
                 reconstruction, mu, logvar, z = model(data)
@@ -431,7 +430,7 @@ def cyclical_training(save_path, model, loader_train, loader_test,
     else:
         print("Model not saved")
 
-    return train_loss, test_loss, kl_loss_train, kl_loss_test, rec_loss_train, rec_loss_test, device #bce_train_loss_collect, bce_test_loss_collect, device
+    return PATH, train_loss, test_loss, kl_loss_train, kl_loss_test, rec_loss_train, rec_loss_test, device #bce_train_loss_collect, bce_test_loss_collect, device
 
 def cyclical_training_cvae(
         save_path, model, loader_train_idx, loader_test_idx,
