@@ -2,10 +2,10 @@ import torch
 import torch.nn as nn
 from sympy.codegen import Print
 
-from ..globals import GLOBAL_NUM_INPUT_RANDOM_GENERATOR
+from ..globals import GLOBAL_NUM_INPUT_RANDOM_GENERATOR, GLOBAL_NUM_OUTPUT_DIM
 
 _inputRandomValues = GLOBAL_NUM_INPUT_RANDOM_GENERATOR
-_outputDim = 2886
+_outputDim = GLOBAL_NUM_OUTPUT_DIM
 
 
 class mGeneratorV1_2886(nn.Module):
@@ -114,9 +114,63 @@ class mGeneratorV3_64_Residual(nn.Module):
 
         x2 = self.activation(self.bn2(self.fc2(x1)))
         x2 = x2 + self.skip(x1)
-
         x2 = self.res_block(x2)
-
         x3 = self.activation(self.bn3(self.fc3(x2)))
         out = self.fc4(x3)
         return out
+
+import torch
+import torch.nn as nn
+
+class ResidualBlock(nn.Module):
+    def __init__(self, dim, dropout=0.1):
+        super().__init__()
+        self.block = nn.Sequential(
+            nn.Linear(dim, dim),
+            nn.BatchNorm1d(dim),
+            nn.LeakyReLU(0.2, inplace=True),
+            nn.Dropout(dropout),
+            nn.Linear(dim, dim),
+            nn.BatchNorm1d(dim)
+        )
+        self.activation = nn.LeakyReLU(0.2, inplace=True)
+
+    def forward(self, x):
+        return self.activation(self.block(x) + x)
+
+
+class mGeneratorV4_Residual(nn.Module):
+    def __init__(self,):
+        super().__init__()
+
+        self.net = nn.Sequential(
+            nn.Linear(_inputRandomValues, 512),
+            nn.BatchNorm1d(512),
+            nn.LeakyReLU(0.2, inplace=True),
+
+            nn.Linear(512, 1024),
+            nn.BatchNorm1d(1024),
+            nn.LeakyReLU(0.2, inplace=True),
+
+            ResidualBlock(1024),
+            ResidualBlock(1024),
+            ResidualBlock(1024),
+
+            nn.Linear(1024, 2048),
+            nn.BatchNorm1d(2048),
+            nn.LeakyReLU(0.2, inplace=True),
+
+            nn.Linear(2048, _outputDim)
+        )
+
+        self._init_weights()
+
+    def _init_weights(self):
+        for m in self.modules():
+            if isinstance(m, nn.Linear):
+                nn.init.kaiming_normal_(m.weight, a=0.2)
+                if m.bias is not None:
+                    nn.init.zeros_(m.bias)
+
+    def forward(self, z):
+        return self.net(z)
