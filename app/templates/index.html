@@ -1,0 +1,168 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSV Drop & Upload</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <style>
+    body {
+      background-color: #f8f9fa;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .mega-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #0d6efd;
+      margin-bottom: 30px;
+    }
+
+    .drop-zone {
+      border: 2px dashed #6c757d;
+      border-radius: 10px;
+      padding: 50px;
+      text-align: center;
+      color: #6c757d;
+      transition: background-color 0.3s, border-color 0.3s;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .drop-zone.dragover {
+      background-color: #e9ecef;
+      border-color: #495057;
+      color: #495057;
+    }
+
+    .drop-zone .file-name {
+      flex: 1;
+      text-align: left;
+      margin-left: 10px;
+      font-weight: bold;
+    }
+
+    #processBtn {
+      width: 100%;
+      margin-top: 15px;
+    }
+
+    .results {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      background-color: #fff;
+      min-height: 100px;
+    }
+
+    .history {
+      margin-top: 20px;
+      padding: 20px;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      background-color: #fff;
+    }
+
+    .history h5 {
+      margin-bottom: 15px;
+    }
+
+    footer {
+      background-color: #0d6efd;
+      color: white;
+      padding: 15px 0;
+      text-align: center;
+      margin-top: auto;
+    }
+
+    .toast-container {
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1050;
+    }
+
+    .custom-toast {
+      min-width: 250px;
+      animation: moveUp 3s forwards;
+    }
+
+    @keyframes moveUp {
+      0% { transform: translateY(0); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translateY(-50px); opacity: 0; }
+    }
+
+    .progress-bar-bg {
+      height: 4px;
+      background-color: red;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      border-radius: 2px;
+      margin-top: 2px;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background-color: red;
+      width: 100%;
+      animation: shrink 3s linear forwards;
+    }
+
+    @keyframes shrink {
+      from { width: 100%; }
+      to { width: 0%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container mt-5 mb-3">
+  <div class="mega-title">Medulloblastoma G3/G4 Subgroup Classification:</div>
+
+  <div id="dropZone" class="drop-zone">
+    <span class="file-name" id="fileName">Drag & Drop your CSV here or click to browse</span>
+    <input type="file" id="fileInput" accept=".csv" style="display:none;">
+  </div>
+
+  <button id="processBtn" class="btn btn-primary">Process File</button>
+
+  <div id="results" class="results">
+    <p><em>No results yet.</em></p>
+  </div>
+
+  <div class="history mt-4">
+    <h5>Latest Uploads</h5>
+    <ul id="historyList" class="list-group">
+      <li class="list-group-item"><em>No history yet.</em></li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>© 2025 My CSV Upload App | All rights reserved.</p>
+  </div>
+</footer>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script src="../static/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
