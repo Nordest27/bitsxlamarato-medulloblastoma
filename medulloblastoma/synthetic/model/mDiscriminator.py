@@ -1,4 +1,5 @@
 import torch.nn as nn
+from torch.nn.utils import spectral_norm
 
 from ..globals import GLOBAL_NUM_OUTPUT_DIM
 
@@ -28,6 +29,8 @@ class mDiscriminatorV1(nn.Module):
 
 
 class ResidualDisBlock(nn.Module):
+    """Residual block for discriminator"""
+
     def __init__(self, dim):
         super().__init__()
         self.fc1 = spectral_norm(nn.Linear(dim, dim))
@@ -79,10 +82,6 @@ class mDiscriminatorV2(nn.Module):
         return self.sigmoid(x)
 
 
-import torch.nn as nn
-from torch.nn.utils import spectral_norm
-
-
 class ResidualDisBlock(nn.Module):
     def __init__(self, dim, dropout=0.2):
         super().__init__()
@@ -102,28 +101,24 @@ class mDiscriminatorV3(nn.Module):
     def __init__(self):
         super().__init__()
 
+        self.sigmoid = nn.Sigmoid()
         self.net = nn.Sequential(
-            spectral_norm(nn.Linear(_inputDim, 2048)),
+            spectral_norm(nn.Linear(_inputDim, 4096)),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Dropout(0.3),
 
-            spectral_norm(nn.Linear(2048, 1024)),
+            spectral_norm(nn.Linear(4096, 1024)),
             nn.LeakyReLU(0.2, inplace=True),
             nn.Dropout(0.3),
 
             ResidualDisBlock(1024),
             ResidualDisBlock(1024),
 
-            spectral_norm(nn.Linear(1024, 512)),
-            nn.LeakyReLU(0.2, inplace=True),
-            nn.Dropout(0.3),
-
-            spectral_norm(nn.Linear(512, 256)),
+            spectral_norm(nn.Linear(1024, 256)),
             nn.LeakyReLU(0.2, inplace=True),
 
             spectral_norm(nn.Linear(256, 1))
         )
-        self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
         return self.sigmoid(self.net(x))

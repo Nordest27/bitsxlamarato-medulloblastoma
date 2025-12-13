@@ -1,6 +1,4 @@
-import torch
 import torch.nn as nn
-from sympy.codegen import Print
 
 from ..globals import GLOBAL_NUM_INPUT_RANDOM_GENERATOR, GLOBAL_NUM_OUTPUT_DIM
 
@@ -43,6 +41,7 @@ class mGeneratorV1_64(nn.Module):
     def forward(self, r):
         return self.net(r)
 
+
 class mGeneratorV2_64(nn.Module):
     def __init__(self):
         super().__init__()
@@ -73,6 +72,7 @@ class mGeneratorV2_64(nn.Module):
         out = self.fc4(x3)
         return out
 
+
 class ResidualBlock(nn.Module):
     def __init__(self, dim):
         super().__init__()
@@ -89,6 +89,7 @@ class ResidualBlock(nn.Module):
         out += residual  # residual connection
         out = self.activation(out)
         return out
+
 
 class mGeneratorV3_64_Residual(nn.Module):
     def __init__(self):
@@ -119,8 +120,6 @@ class mGeneratorV3_64_Residual(nn.Module):
         out = self.fc4(x3)
         return out
 
-import torch
-import torch.nn as nn
 
 class ResidualBlock(nn.Module):
     def __init__(self, dim, dropout=0.1):
@@ -140,27 +139,27 @@ class ResidualBlock(nn.Module):
 
 
 class mGeneratorV4_Residual(nn.Module):
-    def __init__(self,):
+    def __init__(self, ):
         super().__init__()
-
         self.net = nn.Sequential(
             nn.Linear(_inputRandomValues, 512),
             nn.BatchNorm1d(512),
             nn.LeakyReLU(0.2, inplace=True),
+
+            ResidualBlock(512),
 
             nn.Linear(512, 1024),
             nn.BatchNorm1d(1024),
             nn.LeakyReLU(0.2, inplace=True),
 
             ResidualBlock(1024),
-            ResidualBlock(1024),
-            ResidualBlock(1024),
 
             nn.Linear(1024, 2048),
             nn.BatchNorm1d(2048),
             nn.LeakyReLU(0.2, inplace=True),
 
-            nn.Linear(2048, _outputDim)
+            nn.Linear(2048, 2048 * 2),
+            nn.Linear(2048 * 2, _outputDim)
         )
 
         self._init_weights()
