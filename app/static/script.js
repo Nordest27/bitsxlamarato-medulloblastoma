@@ -61,7 +61,7 @@ function sendQuery(file) {
         )
         .then(response => response.json())
         .then(data => {
-          displayResults(data["rValue"],data["rV1"],data["rV2"],data["rV3"]);
+          displayResults(data["P(G4)"],data["MYC"],data["TP53"],data["SNCAIP"]);
         })
         .catch((error) => {
             console.error('Error:', error);
@@ -75,15 +75,15 @@ function displayResults(result, v1, v2,v3) {
   results.innerHTML = `
     <div class="row align-items-center animate__animated animate__fadeIn">
       <div class="col-md-4 text-center">
-        <h2 class="display-8 fw-bold text-secondary">RESULT:</h2>
+        <h2 class="display-8 fw-bold text-secondary">P(G4):</h2>
         <p class="display-2 fw-bold text-primary">${result}</p>
       </div>
       <div class="col-md-8">
         <table class="table table-bordered w-100">
           <tbody>
-            <tr class="table-primary"><td class="fw-semibold">VAL1</td><td class="fw-bold fs-5">${v1}</td></tr>
-            <tr class="table-success"><td class="fw-semibold">VAL2</td><td class="fw-bold fs-5">${v2}</td></tr>
-            <tr class="table-warning"><td class="fw-semibold">VAL3</td><td class="fw-bold fs-5">${v3}</td></tr>
+            <tr class="table-primary"><td class="fw-semibold">MYC</td><td class="fw-bold fs-5">${v1}</td></tr>
+            <tr class="table-success"><td class="fw-semibold">TP53</td><td class="fw-bold fs-5">${v2}</td></tr>
+            <tr class="table-warning"><td class="fw-semibold">SNCAIP</td><td class="fw-bold fs-5">${v3}</td></tr>
           </tbody>
         </table>
       </div>
@@ -98,10 +98,10 @@ function renderHistoryRow(resultValue, val1, val2, val3) {
   const li = document.createElement('li');
   li.className = 'list-group-item d-flex justify-content-between align-items-center animate__animated animate__fadeIn';
   li.innerHTML = `
-    <span class="fw-bold fs-5 text-primary">RESULT: ${resultValue}</span>
-    <span class="badge bg-primary rounded-pill fw-bold fs-6">VAL1: ${val1}</span>
-    <span class="badge bg-success rounded-pill fw-bold fs-6">VAL2: ${val2}</span>
-    <span class="badge bg-warning text-dark rounded-pill fw-bold fs-6">VAL3: ${val3}</span>
+    <span class="fw-bold fs-5 text-primary">P(G4): ${resultValue}</span>
+    <span class="badge bg-primary rounded-pill fw-bold fs-6">MYC: ${val1}</span>
+    <span class="badge bg-success rounded-pill fw-bold fs-6">TP53: ${val2}</span>
+    <span class="badge bg-warning text-dark rounded-pill fw-bold fs-6">SNCAIP: ${val3}</span>
   `;
   if(isFirstTime){
     historyList.innerHTML = ''; // Only one row in history

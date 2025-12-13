@@ -55,7 +55,7 @@ def load_model(model_path,model,hyperparams,seed=2023):
     return model_vae
 
 
-def predict(data, model_path, mid_dim, features, logreg_path):
+def predict_proba(data, model_path, mid_dim, features, logreg_path):
     if 'statistical' in model_path:
         input_dim = 14403
     else:
@@ -86,7 +86,8 @@ def predict(data, model_path, mid_dim, features, logreg_path):
     return pd.Series(index=data.index, data=p)
 
 # Example of use
-# data=pd.read_csv(os.path.join(PROCESSED_DATA_DIR, 'g3g4_statistical.csv'), index_col=0)
-# model_path = os.path.join(MODELS_DIR, 'statistical', 'best_model.pth')
-# logreg_path = os.path.join(MODELS_DIR, 'statistical', 'logreg_save.joblib')
-# predict(data=data, model_path=model_path, mid_dim=1024, features=32, logreg_path=logreg_path)
+#data=pd.read_csv('data/synthetic/cavalli_statistical_synth.csv', index_col=0)
+#model_path = os.path.join(MODELS_DIR, 'statistical', 'best_model.pth')
+#logreg_path = os.path.join(MODELS_DIR, 'statistical', 'logreg_save.joblib')
+#print(predict(data=data, model_path=model_path, mid_dim=1024, features=32, logreg_path=logreg_path))
+
