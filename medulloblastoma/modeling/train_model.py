@@ -628,13 +628,13 @@ def normalize_data(data_train, data_test):
     return normalized_data_train, normalized_data_test
 
 
-def split_data(path_rnaseq, path_clinical,cvae=False, test_size=0.2,seed=2023):
+def split_data(rnaseq, clinical,cvae=False, test_size=0.2,seed=2023):
     '''
     Splits the data into training and testing sets using stratified sampling.
 
     Parameters:
-    path_rnaseq (str): The path to the RNA-seq data.
-    path_clinical (str): The path to the clinical metadata.
+    rnaseq (df): The RNA-seq data.
+    clinical (df): The clinical metadata.
     test_size (float, optional): The proportion of the dataset to include in the test split. Defaults to 0.2.
     seed (int, optional): The random seed. Defaults to 2023.
 
@@ -646,9 +646,8 @@ def split_data(path_rnaseq, path_clinical,cvae=False, test_size=0.2,seed=2023):
     set_seed(seed)
     # Load the data
     # rnaseq = pd.read_csv(path_rnaseq,index_col=0)
-    rnaseq = pd.read_csv(path_rnaseq,index_col=0)
-    clinical = pd.read_csv(path_clinical, index_col=0)
-    # # Check number of samples in rnaseq and clinical data:
+    
+    # Check number of samples in rnaseq and clinical data:
     if rnaseq.shape[0] != clinical.shape[0]:
         rnaseq = rnaseq.T
     assert rnaseq.shape[0] == clinical.shape[0], "Number of samples in RNA-seq and clinical data do not match."
@@ -657,40 +656,7 @@ def split_data(path_rnaseq, path_clinical,cvae=False, test_size=0.2,seed=2023):
     # Filter rnaseq on ductal patients:
     # rnaseq = rnaseq[rnaseq.index.isin(clinical.index)]
     # Split the data into training and testing sets
-    y = clinical["Sample_characteristics_ch1"].values.tolist()
-    if cvae:
-        y_stage = clinical["Sample_characteristics_ch1"].values.tolist()
-        # y_type = clinical["histological_type"].values.tolist()
-        print('One-hot encoding clinical data')
-        # Create a dictionary that maps the groups to integers
-        stage_to_int = {'WNT': 1, 'SHH': 2, 'Group3': 3, 'Group4': 4, 'Group 3': 3, 'Group 4': 4}
-        # Map cancer type to simplified types:
-        # type_conversion = {"Infiltrating Ductal Carcinoma": "ductal",
-        #                    "Infiltrating Lobular Carcinoma": "lobular"}
-
-        # Use a list comprehension to replace each group with its integer value
-        # print('y_stage=\n',y_stage)
-        y_stage = [stage_to_int[subgroup] for subgroup in y_stage]
-        # clinical_data_train = [stage_to_int[stage] for stage in clinical_data_train]
-        # clinical_data_test = [stage_to_int[stage] for stage in clinical_data_test]
-        # Replace histological type with simplified types:
-        # y_type = [type_conversion[ht] for ht in y_type]
-        # To stratify on both stage and type, we can concatenate the two lists:
-        y = y_stage
-        # y = [tp + "_" + stg for stg, tp in zip(y_stage, y_type)]
-        categs = sorted(set(y))
-        # print('categs=\n', categs)
-        print("The shape of the clinical train data is (patients: samples): ", len(y))
-        # One-hot encode the clinical data for classification:
-        y = np.array(y).reshape(-1, 1) # reshape for single feature
-
-
-        # print('before ohe: y[:10]=\n',y[:10])
-        # For torch version 1, call attribute sparse:
-        ohe = OneHotEncoder(categories=[categs], handle_unknown='ignore', sparse_output=False, dtype=np.int8).fit(y)
-        y = ohe.transform(y)
-        # print('y.shape after ohe =\t',y.shape)
-        # print('y[:10,:]=\n',y[:10,:])
+    y = clinical.values.tolist()
 
     X_train, X_test, y_train, y_test = train_test_split(rnaseq, y, test_size=test_size, stratify=y)
     # Final shape must be (samples, features):
@@ -700,14 +666,14 @@ def split_data(path_rnaseq, path_clinical,cvae=False, test_size=0.2,seed=2023):
 
 
 
-def data2tensor(path_rnaseq, path_clinical, batch_size, cvae=False,wsr=False,save_path='../data/interim/'):
+def data2tensor(rnaseq, clinical, batch_size, cvae=False,wsr=False,save_path='../data/interim/'):
     '''
     Loads data from CSV files, normalizes it using MinMaxScaler,
     converts it to tensors, and creates DataLoaders.
 
     Parameters:
-    path_rnaseq (str): The path to the RNA-seq data.
-    path_clinical (str): The path to the clinical metadata.
+    rnaseq (df): The RNA-seq data.
+    clinical (df): The clinical metadata.
     batch_size (int): The size of the batches for the DataLoader.
 
     Returns:
@@ -717,8 +683,8 @@ def data2tensor(path_rnaseq, path_clinical, batch_size, cvae=False,wsr=False,sav
     loader_test (DataLoader): DataLoader for the testing data.
     '''
     # Split the data into training and testing sets:
-    data_train, data_test, clinical_data_train, clinical_data_test  = split_data(path_rnaseq,
-                                                                                 path_clinical,
+    data_train, data_test, clinical_data_train, clinical_data_test  = split_data(rnaseq,
+                                                                                 clinical,
                                                                                  cvae=cvae,
                                                                                  test_size=0.2,
                                                                                  seed=2023
@@ -761,26 +727,8 @@ def data2tensor(path_rnaseq, path_clinical, batch_size, cvae=False,wsr=False,sav
     print('loader_train=\t',loader_train)
     print('loader_train.dataset.shape=\t',loader_train.dataset.shape)
     print('loader_test.dataset.shape=\t',loader_test.dataset.shape)
-    if cvae:
-        # Create a DataLoader for the clinical data, for semi-supervised learning:
-        y_train = torch.tensor(clinical_data_train).to(torch_dtype)
-        y_test = torch.tensor(clinical_data_test).to(torch_dtype)
-        print('y_train.shape=',y_train.shape)
-        print('y_test.shape=',y_test.shape)
-        loader_train_clinical = torch.utils.data.DataLoader(
-            y_train,
-            batch_size=batch_size,
-            shuffle=True,
-        )
-        loader_test_clinical = torch.utils.data.DataLoader(
-            y_test,
-            batch_size=batch_size,
-            shuffle=False,
-        )
 
-        return train_dataset, loader_train, test_dataset, loader_test, loader_train_clinical, loader_test_clinical
-    else:
-        return train_dataset, loader_train, test_dataset, loader_test, None, None
+    return train_dataset, loader_train, test_dataset, loader_test, None, None
 
 
 def loss_plots(save_path, train_loss, test_loss, kl_loss_train, kl_loss_test, rec_loss_train, rec_loss_test, bce_loss_train=None,bce_loss_test=None):#, time_today):
