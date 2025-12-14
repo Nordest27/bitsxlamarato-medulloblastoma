@@ -1,6 +1,6 @@
 import io
 import os
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import pandas as pd
 from medulloblastoma.modeling.predict import predict_proba
 
@@ -10,6 +10,11 @@ _app = Flask(__name__, template_folder='templates', static_folder='static')
 @_app.route('/')
 def endpointHome():
     return render_template('index.html')
+
+
+@_app.route('/public/<path:filename>')
+def send_file(filename):
+    return send_from_directory('public', filename)
 
 @_app.route('/predict', methods=['POST'])
 def predict():
@@ -26,7 +31,7 @@ def predict():
     all_data = pd.read_csv(os.path.join('data', 'processed', 'g3g4_statistical.csv'), index_col=0)
 
     # We concat all the training data to ensure we normalize the value correctly
-    result = predict_proba(data=pd.concat([data, all_data]), model_path=model_path, mid_dim=1024, features=32, logreg_path=logreg_path)
+    result = predict_proba(data=pd.concat([data, all_data]), model_path=model_path, mid_dim=2048, features=32, logreg_path=logreg_path)
 
     return jsonify({
         "P(G4)": round(result[0], 4),
