@@ -15,7 +15,7 @@
 
 An AI-powered tool for classifying medulloblastoma G3/G4 subtypes from gene expression data, developed during the BitsxLaMarató hackathon. This project provides explainable machine learning models to assist in pediatric brain tumor diagnosis and treatment planning.
 
-## 🎯 Project Overview
+## Project Overview
 
 Medulloblastoma is the most common malignant pediatric brain tumor. Accurate subtype classification (particularly G3 vs G4) is crucial for treatment decisions and prognosis. This project develops machine learning models that:
 
@@ -26,14 +26,14 @@ Medulloblastoma is the most common malignant pediatric brain tumor. Accurate sub
 
 ### Key Features
 
-- 🧬 **Large Dataset**: Utilizes GSE85217 with 763 medulloblastoma patients
-- 🔬 **Gene-Level Analysis**: Direct analysis without dimensionality reduction to "metagenes"
-- 📊 **Advanced Preprocessing**: Optimized outlier detection and feature selection
-- 🎨 **Interactive Visualizations**: UMAP plots with continuous and discrete coloring
-- ⚡ **High Performance**: Optimized algorithms for fast processing
-- 📖 **Well Documented**: Comprehensive API documentation and examples
+- **Large Dataset**: Utilizes GSE85217 with 763 medulloblastoma patients
+- **Gene-Level Analysis**: Direct analysis without dimensionality reduction to "metagenes"
+- **Advanced Preprocessing**: Optimized outlier detection and feature selection
+- **Interactive Visualizations**: UMAP plots with continuous and discrete coloring
+- **High Performance**: Optimized algorithms for fast processing
+- **Well Documented**: Comprehensive API documentation and examples
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -90,11 +90,11 @@ python -c "
 from medulloblastoma.dataset import download_data
 from medulloblastoma.features import load_data
 from medulloblastoma.plots import plot_umap_binary
-print('✅ Installation successful!')
+print('Installation successful!')
 "
 ```
 
-## 📝 Usage
+## Usage
 
 ### 1. Data Download and Preparation
 
@@ -174,7 +174,19 @@ This notebook includes:
 - UMAP visualization
 - Model training framework (ready for implementation)
 
-## 📁 Project Structure
+### 5. Run the Webpage using Flask
+The file `app/app.py` contains the flask backed which contains the endpoint for the predictor.
+#### 5.1 Open the web
+By doing
+```bash
+python app/app.py
+```
+The webpage will open in the port 5000 in the localhost.
+<img width="1600" height="834" alt="image" src="https://github.com/user-attachments/assets/bd5f095b-3e7b-40b2-a8b0-4b00400e6810" />
+Patient data can be uploaded as a `.csv` file containing all the features. The response will be a probability of being in the group 4, and the values of the **MYC**, **TP53** and **SNCAIP** to further explain the probability obtained.
+
+
+## Project Structure
 
 ```
 bitsxlamarato-medulloblastoma/
@@ -210,7 +222,7 @@ bitsxlamarato-medulloblastoma/
 └── tests/                           # Unit tests
 ```
 
-## 🔧 API Reference
+## API Reference
 
 ### Dataset Management
 
@@ -250,7 +262,7 @@ plot_umap_binary(data, clinical, colors_dict, title="Subtypes")
 plot_umap_spectrum(data, clinical, colormap='viridis', title="Scores")
 ```
 
-## 🧪 Development
+## Development
 
 ### Running Tests
 
@@ -288,7 +300,7 @@ pip install -e ".[docs]"
 mkdocs serve
 ```
 
-## 📊 Performance
+## Performance
 
 ### Preprocessing Performance
 
@@ -312,7 +324,7 @@ mkdocs serve
 - **Features**: ~54,000 gene probes
 - **Labels**: WHO subgroup classifications (WNT, SHH, G3, G4)
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see our contributing guidelines:
 
@@ -338,11 +350,11 @@ pip install -e ".[dev,docs]"
 pre-commit install
 ```
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **BitsxLaMarató Hackathon** for the challenge and platform
 - **Barcelona Supercomputing Center** for computational resources
@@ -350,7 +362,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **GEO Database** for providing the GSE85217 dataset
 - **Contributors** to the open-source packages used in this project
 
-## 📞 Contact
+## Contact
 
 - **Jose Estragues** - [jose.estragues@bsc.es]
 - **Guillermo Prol** - [guillermo.prolcastelo@bsc.es]
@@ -359,6 +371,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 <div align="center">
-<i>Developed with ❤️ for advancing pediatric cancer research</i>
+<i>Developed with for advancing pediatric cancer research</i>
 </div>
 
